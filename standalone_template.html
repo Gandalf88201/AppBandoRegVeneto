@@ -1,0 +1,559 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bandi Regione Veneto</title>
+<script>try{var t=localStorage.getItem('bv-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
+<style>
+:root{
+  --font-anthropic-sans:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --font-anthropic-serif:Georgia,"Times New Roman",serif;
+  --color-bg:#faf9f5;--color-panel:#ffffff;--color-fg:#1f1e1b;--color-fg-muted:#6b6a64;--color-border-line:#e3e1d8;
+  --color-ok:#2f7d4f;--color-warn:#b4691a;--color-bad:#b3402f;--color-info:#2d5fa8;
+  --cds-gap-sm:8px;--cds-gap-md:16px;--cds-pad-lg:16px;--cds-radius:10px;
+  --cds-font-size-caption:.8125rem;--cds-font-size-body:.9375rem;--cds-font-size-heading:1.0625rem;--cds-font-size-title:1.75rem;
+  --cds-font-weight-medium:600;
+}
+/* tema: Auto segue il sistema; Giorno/Notte forzano la scelta */
+:root{color-scheme:light dark}
+:root[data-theme="light"]{color-scheme:light}
+:root[data-theme="dark"]{color-scheme:dark}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--color-bg:#1d1c19;--color-panel:#262521;--color-fg:#efede6;--color-fg-muted:#a3a198;--color-border-line:#3a3933;
+  --color-ok:#6cc48f;--color-warn:#e0a252;--color-bad:#e57c6b;--color-info:#7fa8e6}}
+:root[data-theme="dark"]{--color-bg:#1d1c19;--color-panel:#262521;--color-fg:#efede6;--color-fg-muted:#a3a198;--color-border-line:#3a3933;
+  --color-ok:#6cc48f;--color-warn:#e0a252;--color-bad:#e57c6b;--color-info:#7fa8e6}
+html{background:var(--color-bg)}
+body{margin:0;padding:24px 16px 48px;background:var(--color-bg);color:var(--color-fg);font-family:var(--font-anthropic-sans);line-height:1.4}
+.bv{max-width:1240px;margin-inline:auto;display:flex;flex-direction:column;gap:var(--cds-gap-md)}
+.bv *{box-sizing:border-box}
+.bv h1{font-family:var(--font-anthropic-serif);font-weight:400;font-size:var(--cds-font-size-title);margin:0;line-height:1.15}
+.bv .bv-sub{margin:4px 0 0;color:var(--color-fg-muted);font-size:var(--cds-font-size-body)}
+.bv .bv-card{background:var(--color-panel);border:1px solid var(--color-border-line);border-radius:var(--cds-radius);padding:var(--cds-pad-lg)}
+.bv .bv-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,10.5rem),1fr));gap:var(--cds-gap-md)}
+.bv .bv-kpis .bv-card{display:flex;flex-direction:column;gap:2px;min-height:6.2rem}
+.bv .bv-k-label{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted)}
+.bv .bv-k-val{font-family:var(--font-anthropic-serif);font-size:2rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.bv .bv-k-note{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted)}
+.bv .bv-ctl{display:flex;flex-direction:column;gap:var(--cds-gap-sm)}
+.bv .bv-search{width:100%;padding:10px 12px;font:inherit;font-size:var(--cds-font-size-body);color:var(--color-fg);background:var(--color-bg);border:1px solid var(--color-border-line);border-radius:var(--cds-radius)}
+.bv .bv-row{display:flex;flex-wrap:wrap;gap:var(--cds-gap-sm);align-items:center}
+.bv .bv-lab{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);margin-right:4px}
+.bv .bv-chip{font:inherit;font-size:var(--cds-font-size-caption);padding:4px 10px;border-radius:999px;border:1px solid var(--color-border-line);background:var(--color-bg);color:var(--color-fg);cursor:pointer}
+.bv .bv-chip[aria-pressed=true]{background:var(--color-fg);color:var(--color-bg);border-color:var(--color-fg)}
+.bv .bv-chip.bv-det{cursor:default;border-style:dashed;color:var(--color-fg-muted)}
+.bv select{font:inherit;font-size:var(--cds-font-size-caption);padding:5px 8px;max-width:100%;color:var(--color-fg);background:var(--color-bg);border:1px solid var(--color-border-line);border-radius:var(--cds-radius)}
+.bv .bv-sel{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1 1 9rem}
+.bv .bv-actions{margin-left:auto;display:flex;gap:var(--cds-gap-sm);flex-wrap:wrap}
+.bv .bv-hint{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);margin:0}
+.bv .bv-main{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--cds-gap-md);align-items:start}
+@media (min-width:1050px){.bv .bv-main{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}.bv .bv-detail{position:sticky;top:12px}}
+.bv .bv-count{font-size:var(--cds-font-size-caption);color:var(--color-fg-muted);margin:0 0 var(--cds-gap-sm)}
+.bv .bv-tw{overflow:auto;max-height:78vh}
+.bv table{width:100%;border-collapse:collapse;font-size:var(--cds-font-size-caption)}
+.bv th{position:sticky;top:0;background:var(--color-panel);text-align:left;font-weight:var(--cds-font-weight-medium);color:var(--color-fg-muted);padding:6px 8px;border-bottom:1px solid var(--color-border-line);white-space:nowrap}
+.bv td{padding:8px;border-bottom:1px solid var(--color-border-line);vertical-align:top}
+.bv tbody tr{cursor:pointer}
+.bv tbody tr:hover{background:color-mix(in srgb,var(--color-fg) 5%,transparent)}
+.bv tbody tr[aria-selected=true]{background:color-mix(in srgb,var(--color-fg) 9%,transparent)}
+.bv td.c-t{min-width:14rem;font-size:var(--cds-font-size-body)}
+.bv td.c-n{white-space:nowrap;font-variant-numeric:tabular-nums}
+.bv .bv-st{display:inline-block;padding:1px 8px;border-radius:999px;font-size:var(--cds-font-size-caption);white-space:nowrap;border:1px solid var(--color-border-line);color:var(--color-fg-muted)}
+.bv .bv-st.s-open{color:var(--color-ok);border-color:currentColor}
+.bv .bv-st.s-new{color:var(--color-ok);border-color:currentColor;font-weight:var(--cds-font-weight-medium)}
+.bv .bv-st.s-exp{color:var(--color-warn);border-color:currentColor;font-weight:var(--cds-font-weight-medium)}
+.bv .bv-st.s-prev{color:var(--color-info);border-color:currentColor;font-weight:var(--cds-font-weight-medium)}
+.bv .bv-more{margin-top:var(--cds-gap-sm)}
+@media (max-width:760px){.bv .c-sec{display:none}}
+.bv .bv-detail h2{font-size:var(--cds-font-size-heading);font-weight:var(--cds-font-weight-medium);margin:0 0 var(--cds-gap-sm);line-height:1.3}
+.bv .bv-dl{display:grid;grid-template-columns:7.5rem minmax(0,1fr);gap:4px 10px;margin:var(--cds-gap-sm) 0;font-size:var(--cds-font-size-caption)}
+.bv .bv-dl dt{color:var(--color-fg-muted)}
+.bv .bv-dl dd{margin:0;overflow-wrap:anywhere}
+.bv .bv-obj{font-size:var(--cds-font-size-caption);line-height:1.5;margin:var(--cds-gap-sm) 0}
+.bv .bv-empty{color:var(--color-fg-muted);font-size:var(--cds-font-size-caption)}
+.bv a{color:var(--color-fg)}
+.bv .bv-head{display:flex;gap:var(--cds-gap-md);align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+.bv .bv-theme{display:flex;gap:4px;padding:3px;border:1px solid var(--color-border-line);border-radius:999px;background:var(--color-panel)}
+.bv .bv-theme .bv-chip{border-color:transparent;background:transparent}
+.bv .bv-theme .bv-chip[aria-pressed=true]{background:var(--color-fg);color:var(--color-bg)}
+.bv .bv-foot{display:flex;flex-direction:column;gap:4px}
+</style>
+</head>
+<body>
+<div class="bv" id="bv-page">
+  <header class="bv-head">
+    <div>
+      <h1>Bandi della Regione Veneto</h1>
+      <p class="bv-sub">Finanziamenti aperti, previsti e chiusi da portale regionale, calendari FESR e FSE+ e Veneto Coesione. Cerca per tema, filtra per materia, struttura o fonte.</p>
+    </div>
+    <div class="bv-theme" id="bv-theme" role="group" aria-label="Tema">
+      <button class="bv-chip" type="button" data-t="auto" aria-pressed="true" title="Segue il tema del sistema">Auto</button>
+      <button class="bv-chip" type="button" data-t="light" aria-pressed="false" title="Tema chiaro">☀ Giorno</button>
+      <button class="bv-chip" type="button" data-t="dark" aria-pressed="false" title="Tema scuro">☾ Notte</button>
+    </div>
+  </header>
+
+  <section class="bv-kpis" id="bv-kpis" aria-label="Indicatori sui finanziamenti">
+    <div class="bv-card"><div class="bv-k-label">Finanziamenti aperti</div><div class="bv-k-val" id="k-aperti">—</div><div class="bv-k-note">pubblicati e non scaduti</div></div>
+    <div class="bv-card"><div class="bv-k-label">Previsti</div><div class="bv-k-val" id="k-previsti">—</div><div class="bv-k-note">nei calendari FESR e FSE+</div></div>
+    <div class="bv-card"><div class="bv-k-label">Nuovi</div><div class="bv-k-val" id="k-nuovi">—</div><div class="bv-k-note">pubblicati negli ultimi 14 giorni</div></div>
+    <div class="bv-card"><div class="bv-k-label">In scadenza</div><div class="bv-k-val" id="k-scad">—</div><div class="bv-k-note">chiudono entro 14 giorni</div></div>
+    <div class="bv-card"><div class="bv-k-label">Dotazione aperti, M€</div><div class="bv-k-val" id="k-dot">—</div><div class="bv-k-note">somma dove dichiarata</div></div>
+  </section>
+
+  <section class="bv-card bv-ctl" aria-label="Ricerca e filtri">
+    <input class="bv-search" id="bv-q" type="search" autocomplete="off" aria-label="Cerca per tema o parola chiave" placeholder="Cerca per tema o parola chiave: efficientamento energetico, startup, turismo montano, intelligenza artificiale…">
+    <div class="bv-row" id="bv-topics"><span class="bv-lab">Temi</span></div>
+    <div class="bv-row" id="bv-detected" hidden><span class="bv-lab">Temi riconosciuti nella ricerca</span></div>
+    <div class="bv-row" id="bv-stato"><span class="bv-lab">Stato</span></div>
+    <div class="bv-row" id="bv-gruppo"><span class="bv-lab">Tipologia</span></div>
+    <div class="bv-row">
+      <label class="bv-sel"><span class="bv-lab">Materia del portale</span><select id="bv-materia"><option value="">Tutte</option></select></label>
+      <label class="bv-sel"><span class="bv-lab">Struttura</span><select id="bv-struttura"><option value="">Tutte</option></select></label>
+      <label class="bv-sel"><span class="bv-lab">Fonte</span><select id="bv-fonte"><option value="">Tutte</option></select></label>
+      <label class="bv-sel"><span class="bv-lab">Destinatari</span><select id="bv-dest"><option value="">Tutti</option><option>Cittadino</option><option>Ente</option><option>Impresa</option></select></label>
+      <label class="bv-sel"><span class="bv-lab">Ordina per</span><select id="bv-sort"><option value="rel">Rilevanza (con ricerca) o scadenza</option><option value="scad">Scadenza più vicina</option><option value="pub">Pubblicazione più recente</option><option value="imp">Dotazione maggiore</option></select></label>
+    </div>
+    <div class="bv-row">
+      <button class="bv-chip" id="bv-reset" type="button">Azzera filtri</button>
+      <div class="bv-actions">
+        <button class="bv-chip" id="bv-xlsx" type="button">Scarica risultati (Excel)</button>
+        <a class="bv-chip" id="bv-dl" href="data/bandi_veneto.xlsx" download hidden style="text-decoration:none">Dataset completo (Excel)</a>
+        <button class="bv-chip" id="bv-load" type="button">Carica dati aggiornati (.json)</button>
+        <input id="bv-file" type="file" accept=".json,application/json" hidden>
+      </div>
+    </div>
+    <p class="bv-hint">La ricerca espande i termini con sinonimi e temi affini (es. «idrogeno» porta a Energia e clima); non usa modelli di embedding. «Previsto» = bando annunciato nei calendari FESR/FSE+ e non ancora pubblicato; «Nuovo» = pubblicato da meno di 14 giorni.</p>
+  </section>
+
+  <section class="bv-main">
+    <div class="bv-card">
+      <p class="bv-count" id="bv-count" aria-live="polite">&nbsp;</p>
+      <div class="bv-tw">
+        <table id="bv-table">
+          <thead><tr><th>Stato</th><th>Titolo</th><th class="c-sec">Struttura</th><th class="c-sec">Categoria</th><th class="c-n">Dotazione</th><th class="c-n">Scadenza / apertura</th></tr></thead>
+          <tbody id="bv-tbody"></tbody>
+        </table>
+      </div>
+      <button class="bv-chip bv-more" id="bv-more" type="button" hidden>Mostra altri risultati</button>
+    </div>
+    <aside class="bv-card bv-detail" id="bv-detail" aria-label="Dettaglio"><p class="bv-empty">Seleziona un bando dall'elenco per vederne il dettaglio.</p></aside>
+  </section>
+
+  <div class="bv-foot">
+    <p class="bv-hint" id="bv-meta"></p>
+    <p class="bv-hint">Il testo pubblicato dal portale non ha valore ufficiale: fa fede il Bollettino Ufficiale della Regione del Veneto. I bandi chiusi più datati possono riportare solo titolo, struttura e scadenza; per la tipologia si usa allora il titolo come indizio.</p>
+  </div>
+</div>
+
+<script>
+/* Generatore minimale di file .xlsx (Office Open XML in zip senza compressione). Nessuna dipendenza esterna. */
+window.bvXlsx = (function () {
+  const utf8 = (s) => { const u = unescape(encodeURIComponent(s)); const a = new Uint8Array(u.length); for (let i = 0; i < u.length; i++) a[i] = u.charCodeAt(i); return a; };
+  const CRC = (() => { const t = []; for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+  const crc32 = (b) => { let c = 0xFFFFFFFF; for (let i = 0; i < b.length; i++) c = CRC[(c ^ b[i]) & 255] ^ (c >>> 8); return (c ^ 0xFFFFFFFF) >>> 0; };
+  const esc = (s) => String(s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const colName = (i) => { let s = '', n = i + 1; while (n > 0) { const m = (n - 1) % 26; s = String.fromCharCode(65 + m) + s; n = Math.floor((n - 1) / 26); } return s; };
+  const serial = (iso) => { const m = /^(\d{4})-(\d\d)-(\d\d)/.exec(iso || ''); return m ? Math.round((Date.UTC(+m[1], +m[2] - 1, +m[3]) - Date.UTC(1899, 11, 30)) / 864e5) : null; };
+  const text = (ref, v, st) => '<c r="' + ref + '"' + (st ? ' s="' + st + '"' : '') + ' t="inlineStr"><is><t xml:space="preserve">' + esc(v) + '</t></is></c>';
+  const cell = (v, r, c, head) => {
+    const ref = colName(c) + r;
+    if (v == null || v === '') return '';
+    if (head) return text(ref, v, 1);
+    if (typeof v === 'number') return '<c r="' + ref + '" s="3"><v>' + v + '</v></c>';
+    if (typeof v === 'object' && v.d !== undefined) { const n = serial(v.d); return n == null ? '' : '<c r="' + ref + '" s="2"><v>' + n + '</v></c>'; }
+    if (typeof v === 'object' && v.url) {
+      const u = String(v.url), lab = v.label || 'Apri';
+      if (u.length < 250) return '<c r="' + ref + '" t="str"><f>HYPERLINK("' + esc(u.replace(/"/g, '""')) + '","' + esc(lab) + '")</f><v>' + esc(lab) + '</v></c>';
+      return text(ref, u);
+    }
+    return text(ref, v);
+  };
+  const NS = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main';
+  const sheetXml = (sh, first) => {
+    const rows = sh.rows, ncol = Math.max.apply(null, rows.map((r) => r.length));
+    let x = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="' + NS + '">';
+    x += '<sheetViews><sheetView workbookViewId="0"' + (first ? ' tabSelected="1"' : '') + '>' + (sh.freeze ? '<pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/>' : '') + '</sheetView></sheetViews>';
+    if (sh.widths && sh.widths.length) x += '<cols>' + sh.widths.map((w, i) => '<col min="' + (i + 1) + '" max="' + (i + 1) + '" width="' + w + '" customWidth="1"/>').join('') + '</cols>';
+    x += '<sheetData>' + rows.map((r, ri) => '<row r="' + (ri + 1) + '">' + r.map((v, ci) => cell(v, ri + 1, ci, sh.header && ri === 0)).join('') + '</row>').join('') + '</sheetData>';
+    if (sh.filter && rows.length > 1) x += '<autoFilter ref="A1:' + colName(ncol - 1) + rows.length + '"/>';
+    return x + '</worksheet>';
+  };
+  const STYLES = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="' + NS + '"><numFmts count="1"><numFmt numFmtId="164" formatCode="dd/mm/yyyy"/></numFmts>' +
+    '<fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts>' +
+    '<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE8E6DC"/><bgColor indexed="64"/></patternFill></fill></fills>' +
+    '<borders count="1"><border><left/><right/><top/><bottom/><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>' +
+    '<cellXfs count="4"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1"/>' +
+    '<xf numFmtId="164" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/><xf numFmtId="3" fontId="0" fillId="0" borderId="0" xfId="0" applyNumberFormat="1"/></cellXfs>' +
+    '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+  const le = (n, bytes) => { const o = []; for (let i = 0; i < bytes; i++) o.push((n >>> (8 * i)) & 255); return o; };
+  const zip = (files) => {
+    const parts = [], central = []; let off = 0;
+    files.forEach((f) => {
+      const nm = utf8(f.name), crc = crc32(f.data), sz = f.data.length;
+      const lh = [].concat(le(0x04034b50, 4), le(20, 2), le(0x0800, 2), le(0, 2), le(0, 2), le(0x21, 2), le(crc, 4), le(sz, 4), le(sz, 4), le(nm.length, 2), le(0, 2));
+      parts.push(new Uint8Array(lh), nm, f.data);
+      central.push(new Uint8Array([].concat(le(0x02014b50, 4), le(20, 2), le(20, 2), le(0x0800, 2), le(0, 2), le(0, 2), le(0x21, 2), le(crc, 4), le(sz, 4), le(sz, 4), le(nm.length, 2), le(0, 2), le(0, 2), le(0, 2), le(0, 2), le(0, 4), le(off, 4))), nm);
+      off += lh.length + nm.length + sz;
+    });
+    const csize = central.reduce((a, b) => a + b.length, 0);
+    const end = new Uint8Array([].concat(le(0x06054b50, 4), le(0, 2), le(0, 2), le(files.length, 2), le(files.length, 2), le(csize, 4), le(off, 4), le(0, 2)));
+    const all = parts.concat(central, [end]), out = new Uint8Array(all.reduce((a, b) => a + b.length, 0));
+    let p = 0; all.forEach((b) => { out.set(b, p); p += b.length; });
+    return out;
+  };
+  return (sheets) => {
+    const R = 'http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+    const files = [
+      ['[Content_Types].xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>' + sheets.map((_, i) => '<Override PartName="/xl/worksheets/sheet' + (i + 1) + '.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join('') + '</Types>'],
+      ['_rels/.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="' + R + '/officeDocument" Target="xl/workbook.xml"/></Relationships>'],
+      ['xl/workbook.xml', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="' + NS + '" xmlns:r="' + R + '"><sheets>' + sheets.map((sh, i) => '<sheet name="' + esc(sh.name) + '" sheetId="' + (i + 1) + '" r:id="rId' + (i + 1) + '"/>').join('') + '</sheets></workbook>'],
+      ['xl/_rels/workbook.xml.rels', '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">' + sheets.map((_, i) => '<Relationship Id="rId' + (i + 1) + '" Type="' + R + '/worksheet" Target="worksheets/sheet' + (i + 1) + '.xml"/>').join('') + '<Relationship Id="rId' + (sheets.length + 1) + '" Type="' + R + '/styles" Target="styles.xml"/></Relationships>'],
+      ['xl/styles.xml', STYLES]
+    ].concat(sheets.map((sh, i) => ['xl/worksheets/sheet' + (i + 1) + '.xml', sheetXml(sh, i === 0)]));
+    return zip(files.map((f) => ({ name: f[0], data: utf8(f[1]) })));
+  };
+})();
+</script>
+<script id="bv-data" type="application/json">__BV_DATA__</script>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const DAY = 864e5, PAGE = 120;
+  const iso = (n) => new Date(Date.now() + n * DAY).toLocaleDateString('sv-SE');
+  const TODAY = iso(0), PAST14 = iso(-14), NEXT14 = iso(14);
+
+  const CONCEPTS = [
+    { id: 'energia', label: 'Energia e clima', t: 'energia energetico energetica efficientamento rinnovabili rinnovabile fotovoltaico solare idrogeno decarbonizzazione cogenerazione biomassa biogas emissioni clima carbonio elettrico elettrica' },
+    { id: 'ricerca', label: 'Ricerca e innovazione', t: 'ricerca innovazione innovativo sperimentale brevetto brevetti tecnologico tecnologia tecnologie laboratorio università spinoff startup prototipo ricercatori trasferimento' },
+    { id: 'digitale', label: 'Digitale e dati', t: 'digitale digitali ict informatica informatico dati open intelligenza artificiale cybersicurezza piattaforma egovernment connettività banda larga software cloud' },
+    { id: 'ambiente', label: 'Ambiente', t: 'ambiente ambientale ecologico rifiuti circolare biodiversità natura bonifica acqua idrico idrica aria sostenibilità sostenibile verde parchi inquinamento' },
+    { id: 'agricoltura', label: 'Agricoltura e foreste', t: 'agricoltura agricolo agricola agroalimentare zootecnia allevamento malga vitivinicolo vino pesca acquacoltura forestale foreste dop igp tipici enogastronomica lupo agriturismo biologico' },
+    { id: 'turismo', label: 'Turismo', t: 'turismo turistico turistica destinazione destinazioni ricettivo ricettive fiera fiere promozione agriturismo accoglienza montagna' },
+    { id: 'cultura', label: 'Cultura e sport', t: 'cultura culturale culturali museo musei spettacolo patrimonio biblioteca biblioteche storia arte teatro cinema eventi sport memoria' },
+    { id: 'lavoro', label: 'Formazione e lavoro', t: 'formazione lavoro occupazione competenze gol apprendistato tirocinio tirocini disoccupati reskilling occupabilità lavoratori orientamento' },
+    { id: 'imprese', label: 'Imprese e competitività', t: 'imprese impresa pmi competitività internazionalizzazione artigianato commercio commerciale credito garanzia investimenti produttive startup rotazione export' },
+    { id: 'sociale', label: 'Sociale e salute', t: 'sociale famiglia famiglie disabilità povertà salute sanità sanitario anziani inclusione minori pari opportunità violenza housing abitare' },
+    { id: 'giovani', label: 'Giovani e scuola', t: 'giovani giovane scuola scuole studenti scolastica scolastico istruzione università educazione concorso borse its' },
+    { id: 'mobilita', label: 'Mobilità e trasporti', t: 'trasporti trasporto mobilità tpl ciclabile ciclabili ferrovia ferroviario porto porti autobus bigliettazione infomobilità' },
+    { id: 'territorio', label: 'Territorio e edilizia', t: 'territorio urbanistica edilizia casa abitazioni rigenerazione montagna montano comuni enti locali lavori pubblici' },
+    { id: 'protezione', label: 'Protezione civile', t: 'protezione civile dissesto idrogeologico emergenza alluvione rischio idraulico sicurezza polizia locale' },
+    { id: 'europa', label: 'Fondi UE e cooperazione', t: 'fesr fse psr feasr interreg europa europeo unione ue cooperazione internazionale gemellaggi partenariato programma' }
+  ];
+
+  const STOP = new Set('di a da in con su per tra fra il lo la i gli le un uno una e ed o ma che del della dei delle dello degli al alla alle ai agli nel nella nei nelle sul sulla sui sulle dal dalla dai dalle non si come'.split(' '));
+  const norm = (s) => String(s || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const stem = (w) => {
+    let s = w.replace(/(zioni|zione|mente|amento|imento|amenti|imenti|isti|ista|ismo|iche|ici|ico|ica|ale|ali|ari|ario|aria|ose|oso|osa|ivo|ive|iva|ivi|are|ire|ere|ando|endo)$/, '');
+    s = s.replace(/[aeiou]+$/, '');
+    return s.length >= 3 ? s : w;
+  };
+  const toks = (s) => norm(s).split(/[^a-z0-9]+/).filter((w) => w.length >= 2 && !STOP.has(w));
+  const stems = (s) => toks(s).map(stem);
+  const pm = (a, b) => a === b || (a.length >= 4 && b.length >= 4 && (a.startsWith(b) || b.startsWith(a)));
+  CONCEPTS.forEach((c) => { c.stems = [...new Set(stems(c.t))]; });
+
+  const isPrev = (r) => r.stato_portale === 'PREVISTO';
+  const isOpen = (r) => r.stato_portale === 'PUBBLICATO' && (!r.scad_iso || r.scad_iso >= TODAY);
+  const statusOf = (r) => {
+    if (isPrev(r)) return 'previsto';
+    if (!isOpen(r)) return 'chiuso';
+    if (r.scad_iso && r.scad_iso <= NEXT14) return 'scadenza';
+    if (r.pub_iso && r.pub_iso >= PAST14) return 'nuovo';
+    return 'aperto';
+  };
+  const ST_LABEL = { aperto: 'Aperto', nuovo: 'Nuovo', scadenza: 'In scadenza', previsto: 'Previsto', chiuso: 'Chiuso' };
+  const ST_CLASS = { aperto: 's-open', nuovo: 's-new', scadenza: 's-exp', previsto: 's-prev', chiuso: '' };
+  const STATO_FILTERS = [['aperti', 'Aperti'], ['apertura', 'In apertura (previsti e nuovi)'], ['scadenza', 'In scadenza'], ['chiusi', 'Chiusi'], ['tutti', 'Tutti']];
+  const GRUPPI = ['Finanziamenti', 'Gare e affidamenti', 'Altro'];
+
+  const state = { q: '', topics: new Set(), stato: 'aperti', gruppi: new Set(['Finanziamenti']), materia: '', struttura: '', fonte: '', dest: '', sort: 'rel', limit: PAGE, selected: null };
+  let ROWS = [], INDEX = [], BYID = new Map(), META = {};
+
+  const FIELDS = [['titolo', 3], ['materie', 2.5], ['categoria', 1], ['struttura', 1], ['oggetto', 1]];
+  const buildIndex = (rows) => rows.map((r) => {
+    const m = new Map();
+    FIELDS.forEach(([f, w]) => stems(r[f]).forEach((s) => m.set(s, (m.get(s) || 0) + w)));
+    return m;
+  });
+
+  const querySpec = () => {
+    const qs = stems(state.q);
+    const terms = new Map();
+    qs.forEach((s) => terms.set(s, 1));
+    const active = new Map();
+    state.topics.forEach((id) => active.set(id, 0.8));
+    CONCEPTS.forEach((c) => { if (!active.has(c.id) && qs.some((s) => c.stems.some((cs) => pm(s, cs)))) active.set(c.id, 0.45); });
+    CONCEPTS.forEach((c) => { const w = active.get(c.id); if (w) c.stems.forEach((cs) => { if (!qs.includes(cs) && (!terms.has(cs) || terms.get(cs) < w)) terms.set(cs, w); }); });
+    return { terms, active, any: terms.size > 0 };
+  };
+
+  const scoreRows = (rows, spec) => {
+    const list = [...spec.terms.entries()];
+    const acc = rows.map((_, i) => list.map(([q]) => { let a = 0; for (const [t, w] of INDEX[i]) if (pm(q, t)) a += w; return a; }));
+    const N = rows.length;
+    const idf = list.map((_, j) => { let df = 0; for (let i = 0; i < N; i++) if (acc[i][j] > 0) df++; return Math.log(1 + N / (1 + df)); });
+    return acc.map((a) => a.reduce((s, v, j) => s + (v > 0 ? list[j][1] * idf[j] * Math.log(1 + v) : 0), 0));
+  };
+
+  const passes = (r) => {
+    const s = statusOf(r);
+    if (state.stato === 'aperti' && !(s === 'aperto' || s === 'nuovo' || s === 'scadenza')) return false;
+    if (state.stato === 'apertura' && !(s === 'previsto' || s === 'nuovo')) return false;
+    if (state.stato === 'scadenza' && s !== 'scadenza') return false;
+    if (state.stato === 'chiusi' && s !== 'chiuso') return false;
+    if (!state.gruppi.has(r.gruppo)) return false;
+    if (state.materia && !String(r.materie).split(' | ').includes(state.materia)) return false;
+    if (state.struttura && r.struttura !== state.struttura) return false;
+    if (state.fonte && r.fonte !== state.fonte) return false;
+    if (state.dest && !String(r.destinatari).includes(state.dest)) return false;
+    return true;
+  };
+  const num = (v) => (v == null ? 0 : Number(v));
+  const rank = (r) => (isOpen(r) ? 0 : isPrev(r) ? 1 : 2);
+  const byScad = (a, b) => {
+    const ra = rank(a), rb = rank(b);
+    if (ra !== rb) return ra - rb;
+    if (ra === 0) return (a.scad_iso || '9999').localeCompare(b.scad_iso || '9999');
+    if (ra === 1) return (a.pub_iso || '9999').localeCompare(b.pub_iso || '9999');
+    return (b.scad_iso || '').localeCompare(a.scad_iso || '');
+  };
+
+  const compute = () => {
+    const spec = querySpec();
+    let items = ROWS.map((r, i) => ({ r, i })).filter((o) => passes(o.r));
+    let scores = null;
+    if (spec.any) { scores = scoreRows(ROWS, spec); items = items.filter((o) => scores[o.i] > 0); }
+    if (state.sort === 'rel' && spec.any) items.sort((a, b) => scores[b.i] - scores[a.i]);
+    else if (state.sort === 'pub') items.sort((a, b) => (b.r.pub_iso || '').localeCompare(a.r.pub_iso || ''));
+    else if (state.sort === 'imp') items.sort((a, b) => num(b.r.importo) - num(a.r.importo));
+    else items.sort((a, b) => byScad(a.r, b.r));
+    return { items, spec };
+  };
+
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const fmt = new Intl.NumberFormat('it-IT', { maximumFractionDigits: 1 });
+
+  const renderKpis = () => {
+    const fin = ROWS.filter((r) => r.gruppo === 'Finanziamenti');
+    const open = fin.filter(isOpen);
+    $('k-aperti').textContent = fmt.format(open.length);
+    $('k-previsti').textContent = fmt.format(fin.filter(isPrev).length);
+    $('k-nuovi').textContent = fmt.format(open.filter((r) => r.pub_iso && r.pub_iso >= PAST14).length);
+    $('k-scad').textContent = fmt.format(open.filter((r) => r.scad_iso && r.scad_iso <= NEXT14).length);
+    $('k-dot').textContent = fmt.format(Math.round(open.reduce((s, r) => s + num(r.importo), 0) / 1e5) / 10);
+  };
+
+  const renderChips = () => {
+    [...$('bv-topics').querySelectorAll('button')].forEach((b) => b.setAttribute('aria-pressed', String(state.topics.has(b.dataset.id))));
+    [...$('bv-stato').querySelectorAll('button')].forEach((b) => b.setAttribute('aria-pressed', String(state.stato === b.dataset.id)));
+    [...$('bv-gruppo').querySelectorAll('button')].forEach((b) => b.setAttribute('aria-pressed', String(state.gruppi.has(b.dataset.id))));
+  };
+
+  const renderDetected = (spec) => {
+    const box = $('bv-detected');
+    [...box.querySelectorAll('.bv-chip')].forEach((e) => e.remove());
+    const shown = CONCEPTS.filter((c) => spec.active.has(c.id) && !state.topics.has(c.id));
+    shown.forEach((c) => box.appendChild(el('span', 'bv-chip bv-det', c.label)));
+    box.hidden = shown.length === 0;
+  };
+
+  const dateCell = (r) => r.scadenza || (r.apertura_prevista ? 'apertura ' + r.apertura_prevista : '—');
+
+  const renderDetail = () => {
+    const box = $('bv-detail');
+    box.replaceChildren();
+    const r = state.selected && BYID.get(state.selected);
+    if (!r) { box.appendChild(el('p', 'bv-empty', "Seleziona un bando dall'elenco per vederne il dettaglio.")); return; }
+    box.appendChild(el('h2', null, r.titolo));
+    const s = statusOf(r);
+    box.appendChild(el('span', 'bv-st ' + ST_CLASS[s], ST_LABEL[s]));
+    const dl = el('dl', 'bv-dl');
+    const add = (label, value) => { if (value === '' || value == null) return; dl.appendChild(el('dt', null, label)); dl.appendChild(el('dd', null, String(value))); };
+    add('Struttura', r.struttura);
+    add('Categoria', r.categoria);
+    add('Tipo di atto', r.tipo);
+    add('Dotazione', r.importo_txt);
+    add(isPrev(r) ? 'Apertura prevista' : 'Pubblicazione', isPrev(r) ? r.apertura_prevista : r.pubblicazione);
+    add('Scadenza', r.scadenza);
+    add('Destinatari', r.destinatari);
+    add('Materie', r.materie);
+    add('Fonte', r.fonte);
+    box.appendChild(dl);
+    if (r.oggetto) box.appendChild(el('p', 'bv-obj', r.oggetto));
+    else box.appendChild(el('p', 'bv-empty', 'Per questo atto lo snapshot contiene solo titolo, struttura e scadenza: la scheda completa è sul portale.'));
+    if (typeof r.link === 'string' && /^https:\/\//.test(r.link)) {
+      const a = el('a', null, 'Apri la fonte ↗'); a.href = r.link; a.target = '_blank'; a.rel = 'noopener noreferrer';
+      box.appendChild(a);
+    }
+  };
+
+  let lastItems = [];
+  const renderTable = (items) => {
+    const tb = $('bv-tbody'); tb.replaceChildren();
+    const show = items.slice(0, state.limit);
+    show.forEach(({ r }) => {
+      const tr = el('tr'); tr.dataset.key = r.id; tr.tabIndex = 0;
+      tr.setAttribute('aria-selected', String(state.selected === r.id));
+      const s = statusOf(r);
+      const c0 = el('td'); c0.appendChild(el('span', 'bv-st ' + ST_CLASS[s], ST_LABEL[s])); tr.appendChild(c0);
+      tr.appendChild(el('td', 'c-t', r.titolo));
+      tr.appendChild(el('td', 'c-sec', r.struttura));
+      tr.appendChild(el('td', 'c-sec', r.categoria));
+      tr.appendChild(el('td', 'c-n', r.importo_txt));
+      tr.appendChild(el('td', 'c-n', dateCell(r)));
+      tb.appendChild(tr);
+    });
+    $('bv-more').hidden = items.length <= show.length;
+  };
+
+  const render = () => {
+    renderChips();
+    const { items, spec } = compute();
+    lastItems = items;
+    renderDetected(spec);
+    $('bv-count').textContent = items.length === 0 ? 'Nessun risultato con questi filtri.' : new Intl.NumberFormat('it-IT').format(items.length) + (items.length === 1 ? ' risultato' : ' risultati');
+    renderTable(items);
+    if (state.selected && !BYID.has(state.selected)) state.selected = null;
+    renderDetail();
+  };
+
+  const setData = (pack, origin) => {
+    ROWS = pack.rows || []; META = pack;
+    BYID = new Map(ROWS.map((r) => [String(r.id), r]));
+    INDEX = buildIndex(ROWS);
+    const mat = new Map();
+    ROWS.forEach((r) => String(r.materie).split(' | ').filter(Boolean).forEach((m) => mat.set(m, (mat.get(m) || 0) + 1)));
+    const reset = (id, first, values) => { const s = $(id); s.replaceChildren(new Option(first, '')); values.forEach((v) => s.appendChild(new Option(v, v))); };
+    reset('bv-materia', 'Tutte', [...mat.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map((x) => x[0]));
+    reset('bv-struttura', 'Tutte', [...new Set(ROWS.map((r) => r.struttura).filter(Boolean))].sort((a, b) => a.localeCompare(b)));
+    reset('bv-fonte', 'Tutte', [...new Set(ROWS.map((r) => r.fonte).filter(Boolean))].sort());
+    state.materia = state.struttura = state.fonte = ''; state.selected = null; state.limit = PAGE;
+    META.origin = origin || 'embedded';
+    const ok = (META.fonti || []).map((f) => f.fonte + (f.ok ? '' : ' (non aggiornata)')).join(' · ');
+    const lead = { embedded: 'Dati incorporati nel file, generati il ', server: 'Dati aggiornati dal server all\'apertura, generati il ', file: 'Dati caricati da file, generati il ' }[META.origin];
+    const meta = $('bv-meta');
+    meta.textContent = lead + (META.generato || 'n.d.') + (ok ? ' da: ' + ok + '.' : '.');
+    const gen = new Date(String(META.generato || '').replace(' ', 'T'));
+    const age = isNaN(gen) ? null : Math.floor((Date.now() - gen.getTime()) / DAY);
+    if (age !== null && age > 3) {
+      const w = el('span', null, ' Attenzione: dati vecchi di ' + age + ' giorni, l\'aggiornamento automatico potrebbe essersi fermato.');
+      w.style.color = 'var(--color-warn)'; w.style.fontWeight = 'var(--cds-font-weight-medium)';
+      meta.appendChild(w);
+    }
+    renderKpis(); render();
+  };
+
+  const exportXlsx = () => {
+    const head = ['Stato', 'Titolo', 'Atto', 'Tipologia', 'Struttura', 'Categoria', 'Dotazione (€)', 'Pubblicazione', 'Scadenza', 'Apertura prevista', 'Destinatari', 'Materie', 'Fonte', 'Oggetto', 'Link'];
+    const body = lastItems.map(({ r }) => [
+      ST_LABEL[statusOf(r)], r.titolo, r.tipo, r.gruppo, r.struttura, r.categoria,
+      r.importo == null ? null : Math.round(Number(r.importo)),
+      isPrev(r) ? null : { d: r.pub_iso }, { d: r.scad_iso }, r.apertura_prevista, r.destinatari, r.materie, r.fonte, r.oggetto,
+      r.link ? { url: r.link, label: 'Apri' } : null
+    ]);
+    const fonti = (META.fonti || []).map((f) => f.fonte + (f.ok ? '' : ' (non aggiornata)')).join('; ');
+    const info = [['Campo', 'Valore'], ['Estratto il', TODAY], ['Dati generati il', META.generato || 'n.d.'], ['Righe esportate', lastItems.length], ['Fonti', fonti],
+      ['Nota', 'Il testo pubblicato dal portale non ha valore ufficiale: fa fede il Bollettino Ufficiale della Regione del Veneto.']];
+    const bytes = window.bvXlsx([
+      { name: 'Risultati', rows: [head].concat(body), header: true, freeze: true, filter: true, widths: [13, 70, 9, 18, 38, 22, 14, 14, 14, 20, 12, 30, 28, 80, 9] },
+      { name: 'Info', rows: info, header: true, widths: [20, 100] }
+    ]);
+    const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'bandi_veneto_risultati_' + TODAY + '.xlsx';
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  };
+
+  const applyTheme = (t) => {
+    const root = document.documentElement;
+    if (t === 'light' || t === 'dark') root.setAttribute('data-theme', t); else root.removeAttribute('data-theme');
+    [...$('bv-theme').querySelectorAll('button')].forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.t === (t || 'auto'))));
+  };
+  const initTheme = () => {
+    let saved = 'auto';
+    try { saved = localStorage.getItem('bv-theme') || 'auto'; } catch (e) { /* storage non disponibile */ }
+    applyTheme(saved);
+    $('bv-theme').addEventListener('click', (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      applyTheme(b.dataset.t);
+      try { localStorage.setItem('bv-theme', b.dataset.t); } catch (err) { /* ignora */ }
+    });
+  };
+
+  const initControls = () => {
+    CONCEPTS.forEach((c) => {
+      const b = el('button', 'bv-chip', c.label); b.type = 'button'; b.dataset.id = c.id; b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', () => { state.topics.has(c.id) ? state.topics.delete(c.id) : state.topics.add(c.id); state.limit = PAGE; render(); });
+      $('bv-topics').appendChild(b);
+    });
+    STATO_FILTERS.forEach(([id, label]) => {
+      const b = el('button', 'bv-chip', label); b.type = 'button'; b.dataset.id = id;
+      b.addEventListener('click', () => { state.stato = id; state.limit = PAGE; render(); });
+      $('bv-stato').appendChild(b);
+    });
+    GRUPPI.forEach((id) => {
+      const b = el('button', 'bv-chip', id); b.type = 'button'; b.dataset.id = id;
+      b.addEventListener('click', () => { if (state.gruppi.has(id)) { if (state.gruppi.size > 1) state.gruppi.delete(id); } else state.gruppi.add(id); state.limit = PAGE; render(); });
+      $('bv-gruppo').appendChild(b);
+    });
+    let timer = null;
+    $('bv-q').addEventListener('input', (e) => { clearTimeout(timer); timer = setTimeout(() => { state.q = e.target.value; state.limit = PAGE; render(); }, 180); });
+    [['bv-materia', 'materia'], ['bv-struttura', 'struttura'], ['bv-fonte', 'fonte'], ['bv-dest', 'dest'], ['bv-sort', 'sort']].forEach(([id, key]) => {
+      $(id).addEventListener('change', (e) => { state[key] = e.target.value; state.limit = PAGE; render(); });
+    });
+    $('bv-reset').addEventListener('click', () => {
+      Object.assign(state, { q: '', stato: 'aperti', materia: '', struttura: '', fonte: '', dest: '', sort: 'rel', limit: PAGE });
+      state.topics = new Set(); state.gruppi = new Set(['Finanziamenti']);
+      $('bv-q').value = '';
+      ['bv-materia', 'bv-struttura', 'bv-fonte', 'bv-dest'].forEach((id) => { $(id).value = ''; });
+      $('bv-sort').value = 'rel';
+      render();
+    });
+    $('bv-more').addEventListener('click', () => { state.limit += PAGE; render(); });
+    $('bv-xlsx').addEventListener('click', exportXlsx);
+    $('bv-load').addEventListener('click', () => $('bv-file').click());
+    $('bv-file').addEventListener('change', (e) => {
+      const f = e.target.files[0]; if (!f) return;
+      f.text().then((t) => {
+        const j = JSON.parse(t);
+        const pack = Array.isArray(j) ? { rows: j, generato: f.name, fonti: [] } : j;
+        if (!Array.isArray(pack.rows)) throw new Error('formato non riconosciuto');
+        setData(pack, 'file');
+      }).catch((err) => alert('File non valido: ' + err.message));
+      e.target.value = '';
+    });
+    const pick = (tr) => {
+      if (!tr || !tr.dataset.key) return;
+      state.selected = tr.dataset.key;
+      [...$('bv-tbody').children].forEach((x) => x.setAttribute('aria-selected', String(x.dataset.key === state.selected)));
+      renderDetail();
+      if (window.innerWidth < 1050) $('bv-detail').scrollIntoView?.({ block: 'nearest', behavior: 'smooth' });
+    };
+    $('bv-tbody').addEventListener('click', (e) => pick(e.target.closest('tr')));
+    $('bv-tbody').addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(e.target.closest('tr')); } });
+  };
+
+  initControls();
+  initTheme();
+  try { setData(JSON.parse($('bv-data').textContent)); }
+  catch (e) { $('bv-count').textContent = 'Dati incorporati non leggibili: usa «Carica dati aggiornati (.json)».'; }
+
+  /* Se l'app è aperta da un indirizzo web (http/https) legge il file dati accanto alla pagina:
+     così mostra sempre l'ultima versione anche se l'HTML è in cache. Da file locale non fa nulla. */
+  const loadRemote = () => {
+    if (!/^https?:$/.test(location.protocol)) return;
+    fetch('data/bandi_veneto.json?t=' + Date.now(), { cache: 'no-store' })
+      .then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then((pack) => {
+        if (Array.isArray(pack.rows) && pack.rows.length && String(pack.generato || '') > String(META.generato || '')) setData(pack, 'server');
+      })
+      .catch(() => { /* resta il dato incorporato */ });
+    fetch('data/bandi_veneto.xlsx', { method: 'HEAD', cache: 'no-store' })
+      .then((r) => { if (r.ok) $('bv-dl').hidden = false; })
+      .catch(() => {});
+  };
+  loadRemote();
+})();
+</script>
+</body>
+</html>
